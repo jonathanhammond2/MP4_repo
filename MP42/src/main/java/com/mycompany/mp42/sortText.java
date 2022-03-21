@@ -13,24 +13,35 @@ import javafx.animation.Animation;
 import javafx.animation.PathTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+// import javafx.util.ElapsedTime;
 
 /**
  *
  * @author jonn
  */
 public class sortText extends LinkedList<Text>{
-    Queue<swapEvent> sortEvts = new LinkedList<>();
+    Queue<Object> sortEvts = new LinkedList<>();
+    // ElapsedTime timer = new ElapsedTime();
     
     // public Text set(int index, Text element){
     //     super.set(index, element);
     // }
     public void setIntVal(int index, int num){
         super.get(index).setText(num + "");
+    }
+
+    public void boldText(int i){
+        super.get(i).setFill(Color.BLUE);
+    }
+
+    public void normText(int i){
+        super.get(i).setFill(Color.BLACK);
     }
 
     public Queue sortEvts(){
@@ -50,25 +61,29 @@ public class sortText extends LinkedList<Text>{
     // }
 
     // public ArrayList<Integer> getIntList(){
-    //     return intVals;
+    //     return/////. intVals;
     // }
     public void clearSortEvts(){
         sortEvts.clear();
     }
     public void makeQuickSortEvents(int first, int last){
+        sortEvts.clear();
         int[] arr = getIntArr();
-        quickSortEvts(arr,0,arr.length);
+        quickSortEvts(arr,first,last);
         System.out.print("\nsorted arr: ");
         for (int i: arr)
             System.out.print(i + "\t");
         System.out.println();
         
     }
+
+    
     public void quickSortEvts(int[] a, int first, int last) {
         //only to quickSort for more than three array elements
         if (last - first > 3) {
             //what's the middle element
             int mid = first + (last - first) / 2;
+            sortEvts.add((Integer) mid);
             //sort the first, middle, and last elements
             if (a[first] > a[mid]) {
                 swapElements(a, first, mid);
@@ -93,10 +108,13 @@ public class sortText extends LinkedList<Text>{
                 //move from the left until we find an element greater than the pivot
                 while (a[indexFromLeft] < pivotValue) {
                     indexFromLeft++;
+                    sortEvts.add(new pointerEvent(indexFromLeft, indexFromLeft-1,true));
+                    
                 }
                 //move from the right until we have an element less than the pivot
                 while (a[indexFromRight] > pivotValue) {
                     indexFromRight--;
+                    sortEvts.add(new pointerEvent(indexFromRight,indexFromRight+1, false));
                 }
                 //provided that the left and right pointers have not crossed
                 //swap the elemeents
@@ -104,8 +122,12 @@ public class sortText extends LinkedList<Text>{
                     swapElements(a, indexFromLeft, indexFromRight);
                     indexFromLeft++;
                     indexFromRight--;
+                    sortEvts.add(new pointerEvent(indexFromLeft,indexFromLeft-1,true));
+                    sortEvts.add(new pointerEvent(indexFromRight,indexFromRight+1,false));
                 } else {
                     done = true;
+                    // sortEvts.add(mid);
+
                 }
             }
             //once the pointers cross, move the pivot into the correct location
@@ -189,6 +211,47 @@ public class sortText extends LinkedList<Text>{
 //        }
         animateSwitchElements((swapEvent) sortEvts.poll());
     }
+
+    public void processStackEvent(){
+        try
+        {
+            Object e = sortEvts.poll();
+            if (e instanceof swapEvent){
+                animateSwitchElements( (swapEvent) e);
+                
+            }
+            else if (e instanceof pointerEvent){
+                processPointerEvent( (pointerEvent) e);
+            }
+            else{
+                processFinalInt(e);
+            }
+            System.out.println(e.toString());
+        }
+        catch(Exception e){
+            System.out.println("done");
+        }
+    }
+
+    public void processFinalInt(Object e){
+        super.get((int)e).setFill(Color.RED);
+        processStackEvent();
+
+    }
+    public void processPointerEvent(pointerEvent p){
+        // if (e.leftPointer){
+            super.get(p.currentIndex).setFill(Color.BLUE);
+            super.get(p.previousIndex).setFill(Color.BLACK);
+            // try{
+            //   Thread.sleep(1000);  
+            // }
+            // catch (InterruptedException e){
+            //     System.out.println(e);
+            // }
+            
+            processStackEvent();
+        // }
+    }
     
     public void animateSwitchElements(swapEvent e){
         int i = e.i;
@@ -218,20 +281,25 @@ public class sortText extends LinkedList<Text>{
                             Animation.Status oldValue, Animation.Status newValue) {
             if(newValue==Animation.Status.STOPPED){
                 swapTxtElements(i,j);
-                
-                
-                try
-                {
-                swapEvent e = (swapEvent) sortEvts.poll();
-                animateSwitchElements(e);
-                System.out.println(e.toString());
-                }
-                catch(Exception e){
-                    System.out.println("done");
-                }
-                
-            }            
+                processStackEvent();
+                // try
+                // {
+                //     Object e = sortEvts.poll();
+                //     if (e instanceof swapEvent){
+                //         animateSwitchElements( (swapEvent) e);
+                        
+                //     }
+                //     else {
+                //         processPointerEvent( (pointerEvent) e);
+                //     }
+                //     System.out.println(e.toString());
+                // }
+                // catch(Exception e){
+                //     System.out.println("done");
+                // }
+            }
         }});
+
         pathT.setCycleCount(1);
         pathT.play();
         

@@ -55,7 +55,7 @@ public class SortTab extends Tab {
         sortBox.setCenter(quickSort);
         sortBox.setBottom(swap);
         
-        for (int i = 0; i<10; i++){
+        for (int i = 0; i<20; i++){
             txt.add(new Text(20.*i,150.,i+""));
             text.add(new Text(20.*i+20,150,i+""));
             sortBox.getChildren().add(text.get(i));
@@ -71,60 +71,61 @@ public class SortTab extends Tab {
 
    }
   
-    public void animateSwitchElements(LinkedList<Text> t, int i, int j){
-        Path path = new Path();
-        Path path2 = new Path();
+//     public void animateSwitchElements(LinkedList<Text> t, int i, int j){
+//         Path path = new Path();
+//         Path path2 = new Path();
         
-        double X = t.get(i).getX();
-        double Y = t.get(i).getY();
+//         double X = t.get(i).getX();
+//         double Y = t.get(i).getY();
         
-        double X2 = t.get(j).getX();
-        double Y2 = t.get(j).getY();
+//         double X2 = t.get(j).getX();
+//         double Y2 = t.get(j).getY();
         
-        double toX = (X + X2)/2;
+//         double toX = (X + X2)/2;
         
-        path.getElements().addAll(new MoveTo(X,Y),new LineTo(toX,125), new LineTo(X2,Y2));
-        path2.getElements().addAll(new MoveTo(X2,Y2),new LineTo(toX, 125), new LineTo(X,Y));
-        //build a PathTransition that has a duration, a path, and a target
+//         path.getElements().addAll(new MoveTo(X,Y),new LineTo(toX,125), new LineTo(X2,Y2));
+//         path2.getElements().addAll(new MoveTo(X2,Y2),new LineTo(toX, 125), new LineTo(X,Y));
+//         //build a PathTransition that has a duration, a path, and a target
         
-        PathTransition pathT = new PathTransition(Duration.millis(2000), path, t.get(i));
-        PathTransition pathT2 = new PathTransition(Duration.millis(2000), path2, t.get(j));
+//         PathTransition pathT = new PathTransition(Duration.millis(2000), path, t.get(i));
+//         PathTransition pathT2 = new PathTransition(Duration.millis(2000), path2, t.get(j));
         
-        pathT.statusProperty().addListener(new ChangeListener<Status>() {
+//         pathT.statusProperty().addListener(new ChangeListener<Status>() {
 
-        @Override
-        public void changed(ObservableValue<? extends Status> observableValue,
-                            Status oldValue, Status newValue) {
-            if(newValue==Status.STOPPED){
-                // swapTxtElements(text,i,j);
-                text.swapTxtElements(i, j);
-//                try{
-////                animateSwitchElements(text,i+1,j-1);}
-//                catch(IndexOutOfBoundsException e){
-//                    System.out.println("done");
-//                }
+//         @Override
+//         public void changed(ObservableValue<? extends Status> observableValue,
+//                             Status oldValue, Status newValue) {
+//             if(newValue==Status.STOPPED){
+//                 // swapTxtElements(text,i,j);
+//                 text.swapTxtElements(i, j);
+// //                try{
+// ////                animateSwitchElements(text,i+1,j-1);}
+// //                catch(IndexOutOfBoundsException e){
+// //                    System.out.println("done");
+// //                }
                 
-            }            
-        }});
-        pathT.setCycleCount(1);
-        pathT.play();
+//             }            
+//         }});
+//         pathT.setCycleCount(1);
+//         pathT.play();
         
-        pathT2.setCycleCount(1);
-        pathT2.play();
+//         pathT2.setCycleCount(1);
+//         pathT2.play();
         
-        text.get(i).setX(X2);
-        text.get(i).setY(Y2);
+//         text.get(i).setX(X2);
+//         text.get(i).setY(Y2);
         
-        text.get(j).setX(X);
-        text.get(j).setY(Y);
-    }
+//         text.get(j).setX(X);
+//         text.get(j).setY(Y);
+//     }
     
     
     public void processButtonPress(ActionEvent evt) {
         if (evt.getTarget().equals(randomize)){
             for (int i = 0; i<text.size(); i++){
             // text.get(i).setText(rand.nextInt(text.size()) + "");
-            text.setIntVal(i, rand.nextInt(text.size()));
+                text.setIntVal(i, rand.nextInt(text.size()));
+                text.normText(i);
             }
         }
         else if (evt.getTarget().equals(quickSort)){
@@ -134,10 +135,11 @@ public class SortTab extends Tab {
 //            }
             // quickSort(nums,0,text.size());
         //    text.quickSortTxt(0, text.size());
-            text.clearSortEvts();
+//            text.clearSortEvts();
             text.makeQuickSortEvents(0,text.size());
             System.out.println(text.sortEvts.toString());
-            text.animateQSort();
+            // text.animateQSort();
+            text.processFinalInt(text.sortEvts().poll());
 //            text.insertionSortTxt(0, text.size());
             
 //            for (int i = 0; i<text.size(); i++){
